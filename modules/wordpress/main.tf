@@ -215,6 +215,11 @@ resource "docker_container" "workspace" {
     host = "host.docker.internal"
     ip   = "host-gateway"
   }
+  volumes {
+    container_path = "/home/${local.username}"
+    volume_name    = docker_volume.home_volume.name
+    read_only      = false
+  }
 
   # Add labels in Docker to keep track of orphan resources.
   labels {
