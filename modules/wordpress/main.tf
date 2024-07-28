@@ -9,12 +9,6 @@ terraform {
   }
 }
 
-variable "network" {
-  description = "The network name"
-  type        = string
-  default     = "coder-wordpress-debug-network"
-}
-
 variable "repo" {
   description = "The repo of wordpress"
   type        = string
