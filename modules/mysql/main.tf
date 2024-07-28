@@ -25,7 +25,7 @@ data "coder_workspace_owner" "me" {}
 resource "docker_image" "mysql" {
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql"
   build {
-    context = "./coder_mysql/mysql/"
+    context = "./mysql/"
   }
   triggers = {
     always_rebuild = timestamp()

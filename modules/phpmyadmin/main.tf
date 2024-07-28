@@ -67,7 +67,7 @@ resource "coder_app" "code-server-phpmyadmin" {
 resource "docker_image" "phpmyadmin" {
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-phpmyadmin"
   build {
-    context = "./coder_phpmyadmin/phpmyadmin/"
+    context = "./phpmyadmin/"
   }
   triggers = {
     always_rebuild = timestamp()
