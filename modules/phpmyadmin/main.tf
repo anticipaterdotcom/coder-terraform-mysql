@@ -1,0 +1,117 @@
+terraform {
+  required_providers {
+    coder = {
+      source = "coder/coder"
+    }
+    docker = {
+      source = "kreuzwerker/docker"
+    }
+  }
+}
+
+variable "network" {
+  description = "The network name"
+  type        = string
+}
+
+locals {
+  username = data.coder_workspace_owner.me.name
+}
+
+data "coder_provisioner" "me" {}
+data "coder_workspace" "me" {}
+data "coder_workspace_owner" "me" {}
+
+resource "coder_agent" "phpmyadmin" {
+  arch           = data.coder_provisioner.me.arch
+  os             = "linux"
+  startup_script = <<-EOT
+    set -e
+
+    # Prepare user home with default files on first start.
+    if [ ! -f ~/.init_done ]; then
+      cp -rT /etc/skel ~
+      touch ~/.init_done
+    fi
+
+    /docker-entrypoint.sh apache2-foreground >/tmp/phpmyadmin-server.log 2>&1 &
+
+    # Wait for MySQL Container coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql to be ready
+    while ! mysqladmin ping -h"coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql" --silent; do
+        echo "Waiting for MySQL coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql to start..."
+        sleep 10
+    done
+
+    # install and start code-server
+    curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
+    /tmp/code-server/bin/code-server --auth none --port 13338 >/tmp/code-server.log 2>&1 &
+  EOT
+}
+
+resource "coder_app" "code-server-phpmyadmin" {
+  agent_id     = coder_agent.phpmyadmin.id
+  slug         = "code-server-phpmyadmin"
+  display_name = "code-server-phpmyadmin"
+  url          = "http://localhost:13338/?folder=/home/${local.username}"
+  icon         = "/icon/code.svg"
+  subdomain    = false
+  share        = "owner"
+
+  healthcheck {
+    url       = "http://localhost:13338/healthz"
+    interval  = 5
+    threshold = 6
+  }
+}
+
+resource "docker_image" "phpmyadmin" {
+  name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-phpmyadmin"
+  build {
+    context = "./coder_phpmyadmin/phpmyadmin/"
+  }
+  triggers = {
+    always_rebuild = timestamp()
+  }
+}
+
+resource "docker_container" "phpmyadmin" {
+  count = data.coder_workspace.me.start_count
+  image = docker_image.phpmyadmin.image_id
+  # Uses lower() to avoid Docker restriction on container names.
+  name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-phpmyadmin"
+  # Hostname makes the shell more user friendly: coder@my-workspace:~$
+  hostname = data.coder_workspace.me.name
+  networks_advanced {
+    name = "${var.network}"
+  }
+  # Use the docker gateway if the access URL is 127.0.0.1
+  entrypoint = ["sh", "-c", replace(coder_agent.phpmyadmin.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  env = [
+    "CODER_AGENT_TOKEN=${coder_agent.phpmyadmin.token}",
+    "PMA_HOST=coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql",
+    "PMA_USER=db",
+    "PMA_PASSWORD=db",
+    "APACHE_PORT=8080"
+  ]
+  host {
+    host = "host.docker.internal"
+    ip   = "host-gateway"
+  }
+  # Add labels in Docker to keep track of orphan resources.
+  labels {
+    label = "coder.owner"
+    value = data.coder_workspace_owner.me.name
+  }
+  labels {
+    label = "coder.owner_id"
+    value = data.coder_workspace_owner.me.id
+  }
+  labels {
+    label = "coder.workspace_id"
+    value = data.coder_workspace.me.id
+  }
+  labels {
+    label = "coder.workspace_name"
+    value = data.coder_workspace.me.name
+  }
+}
