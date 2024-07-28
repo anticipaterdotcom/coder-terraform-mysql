@@ -34,6 +34,9 @@ resource "coder_agent" "phpmyadmin" {
       touch ~/.init_done
     fi
 
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-client
+
     /docker-entrypoint.sh apache2-foreground >/tmp/phpmyadmin-server.log 2>&1 &
 
     # Wait for MySQL Container coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql to be ready
