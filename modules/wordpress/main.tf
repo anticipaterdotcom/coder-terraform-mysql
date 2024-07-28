@@ -164,34 +164,6 @@ resource "coder_agent" "wordpress" {
   }
 }
 
-
-resource "docker_volume" "home_volume" {
-  name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-home"
-  # Protect the volume from being deleted due to changes in attributes.
-  lifecycle {
-    ignore_changes = all
-  }
-  # Add labels in Docker to keep track of orphan resources.
-  labels {
-    label = "coder.owner"
-    value = data.coder_workspace_owner.me.name
-  }
-  labels {
-    label = "coder.owner_id"
-    value = data.coder_workspace_owner.me.id
-  }
-  labels {
-    label = "coder.workspace_id"
-    value = data.coder_workspace.me.id
-  }
-  # This field becomes outdated if the workspace is renamed but can
-  # be useful for debugging or cleaning out dangling volumes.
-  labels {
-    label = "coder.workspace_name_at_creation"
-    value = data.coder_workspace.me.name
-  }
-}
-
 resource "coder_app" "code-server-wordpress" {
   agent_id     = coder_agent.wordpress.id
   slug         = "code-server-wordpress"
@@ -242,11 +214,6 @@ resource "docker_container" "workspace" {
   host {
     host = "host.docker.internal"
     ip   = "host-gateway"
-  }
-  volumes {
-    container_path = "/home/${local.username}"
-    volume_name    = docker_volume.home_volume.name
-    read_only      = false
   }
 
   # Add labels in Docker to keep track of orphan resources.
