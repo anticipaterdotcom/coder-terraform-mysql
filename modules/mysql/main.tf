@@ -22,14 +22,9 @@ data "coder_provisioner" "me" {}
 data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
 
+
 resource "docker_image" "mysql" {
-  name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql"
-  build {
-    context = "."
-  }
-  triggers = {
-    always_rebuild = timestamp()
-  }
+  name = "mysql:8.0.35"
 }
 
 resource "docker_container" "mysql" {

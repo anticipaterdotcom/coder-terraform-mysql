@@ -1,4 +1,0 @@
-FROM mysql:8.0.35
-ENV MYSQL_ALLOW_EMPTY_PASSWORD=true
-
-
