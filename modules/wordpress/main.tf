@@ -27,6 +27,12 @@ variable "upload" {
   default     = "https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/upload.tgz"
 }
 
+variable "gittoken" {
+  description = "The token for the github files"
+  type        = string
+  default     = "GHSATABCD"
+}
+
 locals {
   username = data.coder_workspace_owner.me.name
 }
@@ -80,9 +86,9 @@ resource "coder_agent" "wordpress" {
     echo "memory_limit = 2G" >> /usr/local/etc/php/conf.d/memory-limit.ini
 
     # Copy the Apache virtual host configuration file
-    wget -O /etc/apache2/sites-available/000-default.conf https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/000-default.conf
-    wget -O /var/www/html/index.html https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/index.html
-    wget -O /var/www/html/.env https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example
+    wget -O /etc/apache2/sites-available/000-default.conf https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/000-default.conf?token=${var.gittoken}
+    wget -O /var/www/html/index.html https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/index.html?token=${var.gittoken}
+    wget -O /var/www/html/.env https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example?token=${var.gittoken}
     chown root:root /var/www/html/.env
 
     docker-php-ext-install pdo pdo_mysql
