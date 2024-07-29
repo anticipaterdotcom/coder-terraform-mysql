@@ -163,11 +163,11 @@ resource "coder_agent" "wordpress" {
 
     chown -Rf www-data:www-data /var/www/html
     composer install
-    wp user create admin admin@dinited.dev --role=administrator --user_pass=admin --allow-root || true
+    wp user create admin admin@anticipater.com --role=administrator --user_pass=admin --allow-root || true
 
     # Frontend
-    yarn install
-    node_modules/.bin/webpack --config=node_modules/laravel-mix/setup/webpack.config.js
+    # yarn install
+    # node_modules/.bin/webpack --config=node_modules/laravel-mix/setup/webpack.config.js
 
     # Media files
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/app/uploads && cd /var/www/html/web/app/uploads && tar xfzv /tmp/upload.tgz
