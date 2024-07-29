@@ -113,6 +113,7 @@ resource "coder_agent" "wordpress" {
     rm -rf /var/www/html/*
     ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
 
+    cd /var/www/
     mkdir -p temp_dir
     git clone ${var.repo} temp_dir
     mv temp_dir/. /var/www/html
@@ -141,7 +142,7 @@ resource "coder_agent" "wordpress" {
     node_modules/.bin/webpack --config=node_modules/laravel-mix/setup/webpack.config.js
 
     # Media files
-    cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/app/uploads && cd /var/www/html/web/app/uploads && tar xfzv /tmp/upload.tgz --strip-components=2
+    cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/app/uploads && cd /var/www/html/web/app/uploads && tar xfzv /tmp/upload.tgz
 
     chown www-data:www-data -R /var/www/html
   EOT
