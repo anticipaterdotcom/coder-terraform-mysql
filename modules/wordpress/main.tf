@@ -30,28 +30,7 @@ variable "upload" {
 variable "env" {
   description = "The env of wordpress https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example"
   type        = string
-  default     = <<-EOT
-    DB_NAME=db
-    DB_USER=db
-    DB_PASSWORD=db
-    DB_HOST=ddev-wordpress-bedrock-db
-    WP_DEBUG=false
-
-    WP_ENV='production'
-    WP_HOME='https://wordpress-bedrock.ddev.site'
-    WP_SITEURL="$${WP_HOME}/wp"
-    WP_DEBUG_LOG='debug.log'
-
-    # Generate your keys here: https://roots.io/salts.html
-    AUTH_KEY='generateme'
-    SECURE_AUTH_KEY='generateme'
-    LOGGED_IN_KEY='generateme'
-    NONCE_KEY='generateme'
-    AUTH_SALT='generateme'
-    SECURE_AUTH_SALT='generateme'
-    LOGGED_IN_SALT='generateme'
-    NONCE_SALT='generateme'
-  EOT
+  default     = "test"
 }
 
 locals {
