@@ -74,6 +74,7 @@ resource "coder_agent" "wordpress" {
       cp -rT /etc/skel ~
       mkdir ~/.ssh
       touch ~/.init_done
+      echo ${var.env} > ~/.env 
     fi
 
     # install and start code-server
@@ -109,7 +110,7 @@ resource "coder_agent" "wordpress" {
     # Copy the Apache virtual host configuration file
     wget -O /etc/apache2/sites-available/000-default.conf https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/000-default.conf
     wget -O /var/www/html/index.html https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/index.html
-    wget -O /var/www/html/.env https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example
+    
     chown root:root /var/www/html/.env
 
     docker-php-ext-install pdo pdo_mysql
