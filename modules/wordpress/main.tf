@@ -39,7 +39,7 @@ variable "env" {
 
       WP_ENV='production'
       WP_HOME='https://wordpress-bedrock.ddev.site'
-      WP_SITEURL="${WP_HOME}/wp"
+      WP_SITEURL="$${WP_HOME}/wp"
       WP_DEBUG_LOG='debug.log'
 
       # Generate your keys here: https://roots.io/salts.html
