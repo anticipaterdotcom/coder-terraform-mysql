@@ -31,27 +31,27 @@ variable "env" {
   description = "The env of wordpress https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example"
   type        = string
   default     = <<-EOT
-      DB_NAME=db
-      DB_USER=db
-      DB_PASSWORD=db
-      DB_HOST=ddev-wordpress-bedrock-db
-      WP_DEBUG=false
+    DB_NAME=db
+    DB_USER=db
+    DB_PASSWORD=db
+    DB_HOST=ddev-wordpress-bedrock-db
+    WP_DEBUG=false
 
-      WP_ENV='production'
-      WP_HOME='https://wordpress-bedrock.ddev.site'
-      WP_SITEURL="$${WP_HOME}/wp"
-      WP_DEBUG_LOG='debug.log'
+    WP_ENV='production'
+    WP_HOME='https://wordpress-bedrock.ddev.site'
+    WP_SITEURL="$${WP_HOME}/wp"
+    WP_DEBUG_LOG='debug.log'
 
-      # Generate your keys here: https://roots.io/salts.html
-      AUTH_KEY='generateme'
-      SECURE_AUTH_KEY='generateme'
-      LOGGED_IN_KEY='generateme'
-      NONCE_KEY='generateme'
-      AUTH_SALT='generateme'
-      SECURE_AUTH_SALT='generateme'
-      LOGGED_IN_SALT='generateme'
-      NONCE_SALT='generateme'
-EOT
+    # Generate your keys here: https://roots.io/salts.html
+    AUTH_KEY='generateme'
+    SECURE_AUTH_KEY='generateme'
+    LOGGED_IN_KEY='generateme'
+    NONCE_KEY='generateme'
+    AUTH_SALT='generateme'
+    SECURE_AUTH_SALT='generateme'
+    LOGGED_IN_SALT='generateme'
+    NONCE_SALT='generateme'
+  EOT
 }
 
 locals {
@@ -110,6 +110,7 @@ resource "coder_agent" "wordpress" {
     wget -O /etc/apache2/sites-available/000-default.conf https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/000-default.conf
     wget -O /var/www/html/index.html https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/index.html
     wget -O /var/www/html/.env https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example
+    chown root:root /var/www/html/.env
 
     docker-php-ext-install pdo pdo_mysql
 
@@ -210,6 +211,11 @@ module "code_server_mysql" {
   network = docker_network.network.name
 }
 
+module "code_server_phpmyadmin" {
+  source = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/phpmyadmin"
+  network = docker_network.network.name
+}
+
 resource "docker_image" "wordpress" {
   name = "wordpress:php8.0-apache"
 }
@@ -225,7 +231,7 @@ resource "docker_container" "workspace" {
     name = docker_network.network.name
   }
   # Use the docker gateway if the access URL is 127.0.0.1
-  #entrypoint = ["sh", "-c", replace(coder_agent.wordpress.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  entrypoint = ["sh", "-c", replace(coder_agent.wordpress.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env        = ["CODER_AGENT_TOKEN=${coder_agent.wordpress.token}"]
   host {
     host = "host.docker.internal"
