@@ -74,10 +74,7 @@ resource "coder_agent" "wordpress" {
       cp -rT /etc/skel ~
       mkdir ~/.ssh
       touch ~/.init_done
-      echo ${var.env} > ~/.env
     fi
-
-    exit;
 
     # install and start code-server
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
@@ -112,7 +109,7 @@ resource "coder_agent" "wordpress" {
     # Copy the Apache virtual host configuration file
     wget -O /etc/apache2/sites-available/000-default.conf https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/000-default.conf
     wget -O /var/www/html/index.html https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/index.html
-    cp /tmp/.env /var/www/html/.env
+    wget -O /var/www/html/.env https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example
 
     docker-php-ext-install pdo pdo_mysql
 
@@ -213,11 +210,6 @@ module "code_server_mysql" {
   network = docker_network.network.name
 }
 
-module "code_server_phpmyadmin" {
-  source = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/phpmyadmin"
-  network = docker_network.network.name
-}
-
 resource "docker_image" "wordpress" {
   name = "wordpress:php8.0-apache"
 }
@@ -233,7 +225,7 @@ resource "docker_container" "workspace" {
     name = docker_network.network.name
   }
   # Use the docker gateway if the access URL is 127.0.0.1
-  entrypoint = ["sh", "-c", replace(coder_agent.wordpress.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  #entrypoint = ["sh", "-c", replace(coder_agent.wordpress.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env        = ["CODER_AGENT_TOKEN=${coder_agent.wordpress.token}"]
   host {
     host = "host.docker.internal"
