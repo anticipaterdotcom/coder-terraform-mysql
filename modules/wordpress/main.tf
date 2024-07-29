@@ -27,12 +27,6 @@ variable "upload" {
   default     = "https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/upload.tgz"
 }
 
-variable "gittoken" {
-  description = "The token for the github files"
-  type        = string
-  default     = "GHSATABCD"
-}
-
 locals {
   username = data.coder_workspace_owner.me.name
 }
