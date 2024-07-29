@@ -74,7 +74,10 @@ resource "coder_agent" "wordpress" {
       cp -rT /etc/skel ~
       mkdir ~/.ssh
       touch ~/.init_done
+      echo ${var.env} > ~/.env
     fi
+
+    exit;
 
     # install and start code-server
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
@@ -253,12 +256,5 @@ resource "docker_container" "workspace" {
   labels {
     label = "coder.workspace_name"
     value = data.coder_workspace.me.name
-  }
-
-  provisioner "local-exec" {
-    command = <<EOT
-      whoami
-      /usr/local/bin/docker exec ${self.name} sh -c 'echo "${var.env}" > /var/www/html/.env'
-    EOT
   }
 }
