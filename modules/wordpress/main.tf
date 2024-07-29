@@ -139,6 +139,7 @@ resource "coder_agent" "wordpress" {
 
     rm -rf /var/www/html/*
     ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
+    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
     cd /var/www/
     mkdir -p temp_dir
