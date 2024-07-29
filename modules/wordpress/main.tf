@@ -258,7 +258,7 @@ resource "docker_container" "workspace" {
   provisioner "local-exec" {
     command = <<EOT
       whoami
-      docker exec ${self.name} sh -c 'echo "${var.env}" > /var/www/html/.env'
+      sudo docker exec ${self.name} sh -c 'echo "${var.env}" > /var/www/html/.env'
     EOT
   }
 }
