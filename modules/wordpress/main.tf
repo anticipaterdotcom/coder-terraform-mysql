@@ -109,8 +109,7 @@ resource "coder_agent" "wordpress" {
     # Copy the Apache virtual host configuration file
     wget -O /etc/apache2/sites-available/000-default.conf https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/000-default.conf
     wget -O /var/www/html/index.html https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.ddev/file_snapshots/index.html
-    
-    chown root:root /var/www/html/.env
+    cp /tmp/.env /var/www/html/.env
 
     docker-php-ext-install pdo pdo_mysql
 
