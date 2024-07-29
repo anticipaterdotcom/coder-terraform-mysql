@@ -116,7 +116,7 @@ resource "coder_agent" "wordpress" {
     cd /var/www/
     mkdir -p temp_dir
     git clone ${var.repo} temp_dir
-    mv temp_dir/. /var/www/html
+    mv temp_dir/* /var/www/html
     rm -rf temp_dir --no-preserve-root
     cd /var/www/html
 
