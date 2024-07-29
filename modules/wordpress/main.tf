@@ -51,7 +51,7 @@ variable "env" {
       SECURE_AUTH_SALT='generateme'
       LOGGED_IN_SALT='generateme'
       NONCE_SALT='generateme'
-    EOT
+EOT
 }
 
 locals {
