@@ -15,6 +15,12 @@ variable "repo" {
   default     = "git@github.com:anticipaterdotcom/wordpress-bedrock.git"
 }
 
+variable "branch" {
+  description = "The branch of wordpress"
+  type        = string
+  default     = "main"
+}
+
 variable "dump" {
   description = "The database dump of wordpress"
   type        = string
@@ -124,7 +130,7 @@ resource "coder_agent" "wordpress" {
 
     cd /var/www/
     mkdir -p temp_dir
-    git clone ${var.repo} temp_dir
+    git clone --single-branch --branch ${var.branch} temp_dir
     mv temp_dir/* /var/www/html
     rm -rf temp_dir --no-preserve-root
     cd /var/www/html
