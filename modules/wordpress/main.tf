@@ -62,10 +62,13 @@ resource "coder_agent" "wordpress" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
-    exit;
-
     # Update package lists
     apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y jq
+
+    echo '${var.env}' | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > ~/.env
+
+    exit;
 
     # Install MariaDB Server
     DEBIAN_FRONTEND=noninteractive apt-get install -y sudo gnupg git unzip iputils-ping mariadb-client vim net-tools wget curl
