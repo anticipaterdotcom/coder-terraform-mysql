@@ -64,10 +64,9 @@ resource "coder_agent" "wordpress" {
 
     # Update package lists
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y jq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y jq python
 
-    echo "${var.env}" > ~/.env.blank
-    echo "${var.env}" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > ~/.env.parsed
+    python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > ~/.env
 
     exit;
 
