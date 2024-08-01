@@ -66,7 +66,7 @@ resource "coder_agent" "wordpress" {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y jq
 
-    echo '{"WPML_USER_ID":123,"WPML_SUBSCRIPTION_KEY":123}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > ~/.env
+    echo "${var.env}" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > ~/.env
 
     exit;
 
