@@ -57,7 +57,7 @@ resource "coder_agent" "wordpress" {
     fi
 
     touch ~/.lalaa
-    echo "${var.env}" >> ~/.env
+    echo "${jsondecode(var.env)}" >> ~/.env
 
     # install and start code-server
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
