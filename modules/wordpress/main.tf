@@ -56,6 +56,7 @@ resource "coder_agent" "wordpress" {
       touch ~/.init_done
     fi
 
+    touch ~/.lalaa
     echo "${var.env}" >> ~/.env
 
     # install and start code-server
