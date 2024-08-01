@@ -31,26 +31,6 @@ variable "env" {
   description = "The env of wordpress https://github.com/anticipaterdotcom/wordpress-bedrock/raw/main/.env.example"
   type        = string
   default     = <<-EOT
-    DB_NAME=db
-    DB_USER=db
-    DB_PASSWORD=db
-    DB_HOST=ddev-wordpress-bedrock-db
-    WP_DEBUG=false
-
-    WP_ENV='production'
-    WP_HOME='https://wordpress-bedrock.ddev.site'
-    WP_SITEURL="$${WP_HOME}/wp"
-    WP_DEBUG_LOG='debug.log'
-
-    # Generate your keys here: https://roots.io/salts.html
-    AUTH_KEY='generateme'
-    SECURE_AUTH_KEY='generateme'
-    LOGGED_IN_KEY='generateme'
-    NONCE_KEY='generateme'
-    AUTH_SALT='generateme'
-    SECURE_AUTH_SALT='generateme'
-    LOGGED_IN_SALT='generateme'
-    NONCE_SALT='generateme'
   EOT
 }
 
@@ -150,6 +130,7 @@ resource "coder_agent" "wordpress" {
 
     # Write the coder-${data.coder_workspace.me.id}-mysql variable to an environment file
     echo "DATABASE_URL='mysql://db:db@coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql:3306/db'" >> /var/www/html/.env
+    echo 'WP_HOME="https://80--wordpress--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev/"' >> /var/www/html/.env
     echo 'WP_SITEURL="https://80--wordpress--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev/wp"' >> /var/www/html/.env
 
     # Wait for MySQL Container coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql to be ready
