@@ -66,7 +66,8 @@ resource "coder_agent" "wordpress" {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y jq
 
-    echo "${var.env}" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > ~/.env
+    echo "${var.env}" > ~/.env.blank
+    echo "${var.env}" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > ~/.env.parsed
 
     exit;
 
