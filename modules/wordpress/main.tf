@@ -56,22 +56,16 @@ resource "coder_agent" "wordpress" {
       touch ~/.init_done
     fi
 
-    echo "${var.env}" > ~/.env
-
     # install and start code-server
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
     # Update package lists
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y jq python
-
-    python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > ~/.env
-
-    exit;
+    DEBIAN_FRONTEND=noninteractive apt-get install -y
 
     # Install MariaDB Server
-    DEBIAN_FRONTEND=noninteractive apt-get install -y sudo gnupg git unzip iputils-ping mariadb-client vim net-tools wget curl
+    DEBIAN_FRONTEND=noninteractive apt-get install -y sudo jq python gnupg git unzip iputils-ping mariadb-client vim net-tools wget curl
 
     # Add yarn
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
@@ -135,7 +129,10 @@ resource "coder_agent" "wordpress" {
     rm -rf temp_dir --no-preserve-root
     cd /var/www/html
 
-    # Write the coder-${data.coder_workspace.me.id}-mysql variable to an environment file
+    # Customize
+    python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /var/www/html/.env
+
+    # Overwrite the coder-${data.coder_workspace.me.id}-mysql variable to an environment file
     echo "DATABASE_URL='mysql://db:db@coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql:3306/db'" >> /var/www/html/.env
     echo 'WP_HOME="https://80--wordpress--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev/"' >> /var/www/html/.env
     echo 'WP_SITEURL="https://80--wordpress--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev/wp"' >> /var/www/html/.env
