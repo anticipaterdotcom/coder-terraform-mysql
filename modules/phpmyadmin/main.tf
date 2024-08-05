@@ -109,9 +109,9 @@ resource "docker_container" "phpmyadmin" {
   entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sh", "-c", replace(coder_agent.phpmyadmin.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env = [
     "CODER_AGENT_TOKEN=${coder_agent.phpmyadmin.token}",
-    "PMA_HOST=coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql",
-    "PMA_USER=db",
-    "PMA_PASSWORD=db",
+    "PMA_HOST=${var.pma_host}",
+    "PMA_USER=${var.pma_user}",
+    "PMA_PASSWORD=${var.pma_pass}",
     "APACHE_PORT=8080"
   ]
   host {

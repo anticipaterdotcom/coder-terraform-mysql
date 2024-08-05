@@ -56,7 +56,7 @@ variable "startup_post_commands" {
 
 locals {
   username = "data.coder_workspace_owner.me.name"
-  pma_host = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-shopware"
+  pma_host = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}"
 }
 
 variable "is_local" {
