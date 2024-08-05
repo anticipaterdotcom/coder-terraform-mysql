@@ -69,7 +69,7 @@ resource "coder_agent" "wordpress" {
   startup_script = <<-EOT
     set -e
 
-    bash -c '${var.startup_pre_commands}'
+    ${var.startup_pre_commands}
 
     # Prepare user home with default files on first start.
     if [ ! -f ~/.init_done ]; then
@@ -177,7 +177,7 @@ resource "coder_agent" "wordpress" {
 
     chown www-data:www-data -R /var/www/html
 
-    bash -c '${var.startup_post_commands}'
+    ${var.startup_post_commands}
 
   EOT
 
