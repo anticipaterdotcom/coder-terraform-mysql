@@ -71,26 +71,7 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
-  startup_script = <<-EOT
-    set -e
-
-    ${var.startup_pre_commands}
-
-    # Prepare user home with default files on first start.
-    if [ ! -f ~/.init_done ]; then
-      cp -rT /etc/skel ~
-      mkdir ~/.ssh
-      touch ~/.init_done
-    fi
-
-    # install and start code-server
-    curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
-    /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
-
-    ${var.startup_post_commands}
-
-  EOT
-
+  
   # These environment variables allow you to make Git commits right away after creating a
   # workspace. Note that they take precedence over configuration defined in ~/.gitconfig!
   # You can remove this block if you'd prefer to configure Git manually or using
