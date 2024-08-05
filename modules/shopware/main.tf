@@ -73,7 +73,7 @@ resource "coder_agent" "shopware" {
   os             = "linux"
   startup_script = <<-EOT
     set -e
-
+    id
     sudo chsh -s /bin/bash www-data
     exit;
 
