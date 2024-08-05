@@ -88,11 +88,10 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    /entrypoint.sh >/tmp/dockware.log 2>&1 &
+
     cd /var/www/html
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
-
-
-
 
     bin/console system:generate-jwt-secret || true
     bin/console user:change-password admin --password shopware || true
@@ -100,7 +99,6 @@ resource "coder_agent" "shopware" {
     ./bin/build-administration.sh
     ./bin/build-storefront.sh
 
-    /entrypoint.sh >/tmp/dockware.log 2>&1 &
     ${var.startup_post_commands}
 
   EOT
