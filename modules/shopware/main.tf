@@ -89,11 +89,14 @@ resource "coder_agent" "shopware" {
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
     cd /var/www/html
-    sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${data.coder_workspace.me.name}--${data.coder_workspace.me.owner}.cloud.dinited.dev\//g' .env
+    sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
+
+
+
 
     bin/console system:generate-jwt-secret || true
     bin/console user:change-password admin --password shopware || true
-    bin/console sales-channel:update:domain 80--shopware--${data.coder_workspace.me.name}--${data.coder_workspace.me.owner}.cloud.dinited.dev
+    bin/console sales-channel:update:domain 80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev
     ./bin/build-administration.sh
     ./bin/build-storefront.sh
 
