@@ -130,7 +130,7 @@ module "code_server_phpmyadmin" {
   network = docker_network.network.name
   pma_host = "${local.pma_host}"
   pma_user = "root"
-  pma_password = "root"
+  pma_pass = "root"
   is_local = var.is_local
 }
 
