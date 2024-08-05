@@ -40,6 +40,13 @@ variable "env" {
   EOT
 }
 
+variable "startup_post_commands" {
+  description = "Startup post commands"
+  type        = string
+  default     = <<-EOT
+  EOT
+}
+
 locals {
   username = data.coder_workspace_owner.me.name
 }
@@ -160,6 +167,9 @@ resource "coder_agent" "wordpress" {
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/app/uploads && cd /var/www/html/web/app/uploads && tar xfz /tmp/upload.tgz
 
     chown www-data:www-data -R /var/www/html
+
+    ${var.startup_post_commands}
+
   EOT
 
   # These environment variables allow you to make Git commits right away after creating a
