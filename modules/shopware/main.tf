@@ -96,6 +96,7 @@ resource "coder_agent" "shopware" {
     git clone --single-branch --branch ${var.branch} ${var.repo} temp_dir
     mv temp_dir/* /var/www/html
     rm -rf temp_dir --no-preserve-root
+    chown www-data -Rf /var/www/html
     cp /var/www/.env /var/www/html/.env
     mkdir -p /var/www/html/custom/plugins
     mkdir -p /var/www/html/custom/static-plugins
