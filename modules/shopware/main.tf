@@ -72,6 +72,7 @@ resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
   startup_script = <<-EOT
+    sudo su -
     set -e
 
   EOT
