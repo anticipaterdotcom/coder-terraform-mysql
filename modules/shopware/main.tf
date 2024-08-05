@@ -117,8 +117,8 @@ resource "coder_agent" "shopware" {
 
     cd /var/www/html
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
-    echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" > /var/www/html/.env
-    echo "LOCK_DSN=flock" > /var/www/html/.env
+    echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" >> /var/www/html/.env
+    echo "LOCK_DSN=flock" >> /var/www/html/.env
 
     bin/console system:generate-jwt-secret || true
     bin/console user:change-password admin --password shopware || true
