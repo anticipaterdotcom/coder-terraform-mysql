@@ -72,23 +72,10 @@ resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
   startup_script = <<-EOT
-    set -e
-    id
-    sudo chsh -s /bin/bash www-data
-    exit;
-
+    set -x
+    echo "Running startup script..."
+    /bin/bash -c "id"
   EOT
-
-  # These environment variables allow you to make Git commits right away after creating a
-  # workspace. Note that they take precedence over configuration defined in ~/.gitconfig!
-  # You can remove this block if you'd prefer to configure Git manually or using
-  # dotfiles. (see docs/dotfiles.md)
-  env = {
-    GIT_AUTHOR_NAME     = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
-    GIT_AUTHOR_EMAIL    = "${data.coder_workspace_owner.me.email}"
-    GIT_COMMITTER_NAME  = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
-    GIT_COMMITTER_EMAIL = "${data.coder_workspace_owner.me.email}"
-  }
 }
 
 resource "coder_app" "code-server-shopware" {
