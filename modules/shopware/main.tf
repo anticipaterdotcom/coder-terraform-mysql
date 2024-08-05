@@ -88,6 +88,7 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    cd /var/www/html
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${data.coder_workspace.me.name}--${data.coder_workspace.me.owner}.cloud.dinited.dev\//g' .env
 
     bin/console system:generate-jwt-secret || true
