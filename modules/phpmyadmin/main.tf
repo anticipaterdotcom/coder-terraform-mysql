@@ -71,6 +71,12 @@ resource "docker_image" "phpmyadmin" {
   name = "phpmyadmin/phpmyadmin"
 }
 
+variable "is_local" {
+  description = "Flag to indicate if terraform is running locally"
+  type        = bool
+  default     = false
+}
+
 resource "docker_container" "phpmyadmin" {
   count = data.coder_workspace.me.start_count
   image = docker_image.phpmyadmin.image_id
@@ -82,7 +88,7 @@ resource "docker_container" "phpmyadmin" {
     name = "${var.network}"
   }
   # Use the docker gateway if the access URL is 127.0.0.1
-  entrypoint = ["sh", "-c", replace(coder_agent.phpmyadmin.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sh", "-c", replace(coder_agent.phpmyadmin.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env = [
     "CODER_AGENT_TOKEN=${coder_agent.phpmyadmin.token}",
     "PMA_HOST=coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql",
