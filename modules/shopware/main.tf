@@ -55,7 +55,7 @@ variable "startup_post_commands" {
 }
 
 locals {
-  username = "data.coder_workspace_owner.me.name"
+  username = "root"
 }
 
 variable "is_local" {
