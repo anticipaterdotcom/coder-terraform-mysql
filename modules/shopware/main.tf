@@ -96,7 +96,7 @@ resource "coder_agent" "shopware" {
     git clone --single-branch --branch ${var.branch} ${var.repo} temp_dir
     mv temp_dir/* /var/www/html
     rm -rf temp_dir --no-preserve-root
-    cp /var/www/.env /var/www/html.env
+    cp /var/www/.env /var/www/html/.env
 
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
 
