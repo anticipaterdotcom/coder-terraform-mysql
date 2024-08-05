@@ -124,14 +124,12 @@ resource "docker_network" "network" {
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-network"
 }
 
-module "code_server_mysql" {
-  source  = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/mysql"
-  network = docker_network.network.name
-}
-
 module "code_server_phpmyadmin" {
   source = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/phpmyadmin"
   network = docker_network.network.name
+  pma_host = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-shopware"
+  pma_user = "root"
+  pma_password = "root"
   is_local = var.is_local
 }
 
