@@ -99,6 +99,7 @@ resource "coder_agent" "shopware" {
     cp /var/www/.env /var/www/html/.env
     mkdir -p /var/www/html/custom/plugins
     mkdir -p /var/www/html/custom/static-plugins
+    composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts
 
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
 
