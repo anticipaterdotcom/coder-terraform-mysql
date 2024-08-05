@@ -71,11 +71,6 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
-  startup_script = <<-EOT
-    set -x
-    echo "Running startup script..."
-    /bin/bash -c "id"
-  EOT
 }
 
 resource "coder_app" "code-server-shopware" {
