@@ -55,7 +55,7 @@ variable "startup_post_commands" {
 }
 
 locals {
-  username = "root"
+  username = "data.coder_workspace_owner.me.name"
 }
 
 variable "is_local" {
@@ -71,6 +71,25 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
+  startup_script = <<-EOT
+    set -e
+
+    ${var.startup_pre_commands}
+
+    # Prepare user home with default files on first start.
+    if [ ! -f ~/.init_done ]; then
+      cp -rT /etc/skel ~
+      mkdir ~/.ssh
+      touch ~/.init_done
+    fi
+
+    # install and start code-server
+    curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
+    /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
+
+    ${var.startup_post_commands}
+
+  EOT
 
   # These environment variables allow you to make Git commits right away after creating a
   # workspace. Note that they take precedence over configuration defined in ~/.gitconfig!
@@ -116,7 +135,7 @@ module "code_server_phpmyadmin" {
 }
 
 resource "docker_image" "shopware" {
-  name = "dockware/play:6.6.3.0"
+  name = "dockware/dev:6.6.3.0"
 }
 
 resource "docker_container" "workspace" {
@@ -130,7 +149,7 @@ resource "docker_container" "workspace" {
     name = docker_network.network.name
   }
   # Use the docker gateway if the access URL is 127.0.0.1
-  entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sudo su -l www-data -s /bin/bash", "-c", replace(coder_agent.shopware.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sh", "-c", replace(coder_agent.shopware.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env        = ["CODER_AGENT_TOKEN=${coder_agent.shopware.token}"]
   host {
     host = "host.docker.internal"
