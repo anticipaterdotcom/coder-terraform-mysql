@@ -71,7 +71,7 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
-  
+
   # These environment variables allow you to make Git commits right away after creating a
   # workspace. Note that they take precedence over configuration defined in ~/.gitconfig!
   # You can remove this block if you'd prefer to configure Git manually or using
@@ -116,7 +116,7 @@ module "code_server_phpmyadmin" {
 }
 
 resource "docker_image" "shopware" {
-  name = "dockware/dev:6.6.3.0"
+  name = "dockware/play:6.6.3.0"
 }
 
 resource "docker_container" "workspace" {
