@@ -90,6 +90,12 @@ resource "coder_agent" "shopware" {
 
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
 
+    # Wait for MySQL  to be ready
+    while ! mysqladmin ping --silent; do
+        echo "Waiting for MySQL to start..."
+        sleep 10
+    done
+
     cd /var/www/html
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
 
