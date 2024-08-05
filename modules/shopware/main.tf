@@ -55,7 +55,7 @@ variable "startup_post_commands" {
 }
 
 locals {
-  username = "root"
+  username = "data.coder_workspace_owner.me.name"
 }
 
 variable "is_local" {
@@ -71,6 +71,36 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
+  startup_script = <<-EOT
+    set -e
+
+    ${var.startup_pre_commands}
+
+    # Prepare user home with default files on first start.
+    if [ ! -f ~/.init_done ]; then
+      cp -rT /etc/skel ~
+      mkdir ~/.ssh
+      touch ~/.init_done
+    fi
+
+    # install and start code-server
+    curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
+    /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
+
+    ${var.startup_post_commands}
+
+  EOT
+
+  # These environment variables allow you to make Git commits right away after creating a
+  # workspace. Note that they take precedence over configuration defined in ~/.gitconfig!
+  # You can remove this block if you'd prefer to configure Git manually or using
+  # dotfiles. (see docs/dotfiles.md)
+  env = {
+    GIT_AUTHOR_NAME     = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
+    GIT_AUTHOR_EMAIL    = "${data.coder_workspace_owner.me.email}"
+    GIT_COMMITTER_NAME  = coalesce(data.coder_workspace_owner.me.full_name, data.coder_workspace_owner.me.name)
+    GIT_COMMITTER_EMAIL = "${data.coder_workspace_owner.me.email}"
+  }
 }
 
 resource "coder_app" "code-server-shopware" {
@@ -111,7 +141,7 @@ resource "docker_image" "shopware" {
 resource "docker_container" "workspace" {
   count = data.coder_workspace.me.start_count
   image = docker_image.shopware.name
-  user = "dockware"
+  user = root
   # Uses lower() to avoid Docker restriction on container names.
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}"
   # Hostname makes the shell more user friendly: coder@my-workspace:~$
