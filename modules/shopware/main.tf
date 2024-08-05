@@ -88,6 +88,12 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    cd /var/www/
+    mkdir -p temp_dir
+    git clone --single-branch --branch ${var.branch} ${var.repo} temp_dir
+    mv temp_dir/* /var/www/html
+    rm -rf temp_dir --no-preserve-root
+
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
 
     # Wait for MySQL  to be ready
