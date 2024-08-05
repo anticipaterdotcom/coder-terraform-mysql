@@ -125,15 +125,6 @@ resource "docker_network" "network" {
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-network"
 }
 
-module "code_server_phpmyadmin" {
-  source = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/phpmyadmin"
-  network = docker_network.network.name
-  pma_host = "${local.pma_host}"
-  pma_user = "root"
-  pma_pass = "root"
-  is_local = var.is_local
-}
-
 resource "docker_image" "shopware" {
   name = "dockware/dev:6.6.3.0"
 }
@@ -174,4 +165,13 @@ resource "docker_container" "workspace" {
     label = "coder.workspace_name"
     value = data.coder_workspace.me.name
   }
+}
+
+module "code_server_phpmyadmin" {
+  source = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/phpmyadmin"
+  network = docker_network.network.name
+  pma_host = "${local.pma_host}"
+  pma_user = "root"
+  pma_pass = "root"
+  is_local = var.is_local
 }
