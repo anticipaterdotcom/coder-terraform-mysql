@@ -89,6 +89,7 @@ resource "coder_agent" "shopware" {
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
     cd /var/www/
+    rm -rf /var/www/html
     mkdir -p temp_dir
     git clone --single-branch --branch ${var.branch} ${var.repo} temp_dir
     mv temp_dir/* /var/www/html
