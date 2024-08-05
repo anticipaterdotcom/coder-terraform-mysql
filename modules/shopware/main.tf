@@ -71,10 +71,9 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
+  user           = root
   startup_script = <<-EOT
-    sudo su -
     set -e
-
   EOT
 
   # These environment variables allow you to make Git commits right away after creating a
@@ -135,7 +134,7 @@ resource "docker_container" "workspace" {
     name = docker_network.network.name
   }
   # Use the docker gateway if the access URL is 127.0.0.1
-  entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sh", "-c", replace(coder_agent.shopware.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sudo -u www-data bash", "-c", replace(coder_agent.shopware.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env        = ["CODER_AGENT_TOKEN=${coder_agent.shopware.token}"]
   host {
     host = "host.docker.internal"
