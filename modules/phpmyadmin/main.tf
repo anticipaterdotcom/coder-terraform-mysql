@@ -17,7 +17,7 @@ variable "network" {
 variable "pma_host" {
   description = "The PMA host"
   type        = string
-  default     = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-phpmyadmin"
+  default     = "db"
 }
 
 variable "pma_user" {
