@@ -88,6 +88,14 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    sed -i 's/http:\/\/localhost/http:\/\/8000--main--${data.coder_workspace.me.name}--${data.coder_workspace.me.owner}.cde.dinited.com\//g' .env
+
+    bin/console system:generate-jwt-secret || true
+    bin/console user:change-password admin --password shopware || true
+    bin/console sales-channel:update:domain 8000--main--${data.coder_workspace.me.name}--${data.coder_workspace.me.owner}.cde.dinited.com
+    ./bin/build-administration.sh
+    ./bin/build-storefront.sh
+
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
     ${var.startup_post_commands}
 
