@@ -71,7 +71,6 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
-  user           = root
   startup_script = <<-EOT
     set -e
   EOT
