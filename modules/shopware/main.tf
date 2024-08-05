@@ -55,7 +55,7 @@ variable "startup_post_commands" {
 }
 
 locals {
-  username = "dockware"
+  username = "root"
 }
 
 variable "is_local" {
