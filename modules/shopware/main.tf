@@ -90,6 +90,7 @@ resource "coder_agent" "shopware" {
 
     cd /var/www/
     rm -rf /var/www/html
+    mkdir -p /var/www/html
     mkdir -p temp_dir
     git clone --single-branch --branch ${var.branch} ${var.repo} temp_dir
     mv temp_dir/* /var/www/html
