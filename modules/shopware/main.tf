@@ -24,13 +24,13 @@ variable "branch" {
 variable "dump" {
   description = "The database dump of shopware"
   type        = string
-  default     = "https://github.com/anticipaterdotcom/shopware6-starter/raw/main/.ddev/db_snapshots/dump.sql.gz"
+  default     = "https://github.com/anticipaterdotcom/shopware6-starter/raw/main/public/demo.sql.gz"
 }
 
 variable "upload" {
   description = "The upload folder of shopware"
   type        = string
-  default     = "https://github.com/anticipaterdotcom/shopware6-starter/raw/main/.ddev/file_snapshots/media.tgz"
+  default     = "https://github.com/anticipaterdotcom/shopware6-starter/raw/main/public/demo.tgz"
 }
 
 variable "env" {
