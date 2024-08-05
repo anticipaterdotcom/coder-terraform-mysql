@@ -57,9 +57,9 @@ resource "coder_agent" "phpmyadmin" {
 
     /docker-entrypoint.sh apache2-foreground >/tmp/phpmyadmin-server.log 2>&1 &
 
-    # Wait for MySQL Container coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql to be ready
-    while ! mysqladmin ping -h"coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql" --silent; do
-        echo "Waiting for MySQL coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql to start..."
+    # Wait for MySQL Container ${pma_host} to be ready
+    while ! mysqladmin ping -h"${pma_host}" --silent; do
+        echo "Waiting for MySQL ${pma_host} to start..."
         sleep 10
     done
 
