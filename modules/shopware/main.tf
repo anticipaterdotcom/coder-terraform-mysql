@@ -112,6 +112,9 @@ resource "coder_agent" "shopware" {
         sleep 10
     done
 
+    wget -nv -O dump.sql.gz ${var.dump}
+    zcat dump.sql.gz | mysql -u 'root' -proot shopware
+
     cd /var/www/html
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
 
