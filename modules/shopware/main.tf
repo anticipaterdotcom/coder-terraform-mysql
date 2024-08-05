@@ -74,7 +74,7 @@ resource "coder_agent" "shopware" {
   startup_script = <<-EOT
     set -e
 
-    touch hallo
+    sudo chsh -s /bin/bash www-data
     exit;
 
   EOT
