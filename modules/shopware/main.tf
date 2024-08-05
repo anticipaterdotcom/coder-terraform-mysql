@@ -87,6 +87,7 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    /entrypoint.sh >/tmp/dockware.log 2>&1 &
     ${var.startup_post_commands}
 
   EOT
