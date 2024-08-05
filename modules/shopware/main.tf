@@ -97,6 +97,8 @@ resource "coder_agent" "shopware" {
     mv temp_dir/* /var/www/html
     rm -rf temp_dir --no-preserve-root
     cp /var/www/.env /var/www/html/.env
+    mkdir -p /var/www/html/custom/plugins
+    mkdir -p /var/www/html/custom/static-plugins
 
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
 
