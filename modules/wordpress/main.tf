@@ -56,6 +56,7 @@ variable "startup_post_commands" {
 
 locals {
   username = data.coder_workspace_owner.me.name
+  pma_host = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql"
 }
 
 
@@ -220,6 +221,9 @@ module "code_server_mysql" {
 
 module "code_server_phpmyadmin" {
   source = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/phpmyadmin"
+  pma_host = "${local.pma_host}"
+  pma_user = "db"
+  pma_pass = "db"
   network = docker_network.network.name
 }
 
