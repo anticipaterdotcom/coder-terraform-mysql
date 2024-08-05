@@ -40,6 +40,13 @@ variable "env" {
   EOT
 }
 
+variable "startup_pre_commands" {
+  description = "Startup pre commands"
+  type        = string
+  default     = <<-EOT
+  EOT
+}
+
 variable "startup_post_commands" {
   description = "Startup post commands"
   type        = string
@@ -61,6 +68,8 @@ resource "coder_agent" "wordpress" {
   os             = "linux"
   startup_script = <<-EOT
     set -e
+
+    bash -c '${var.startup_pre_commands}'
 
     # Prepare user home with default files on first start.
     if [ ! -f ~/.init_done ]; then
@@ -168,7 +177,7 @@ resource "coder_agent" "wordpress" {
 
     chown www-data:www-data -R /var/www/html
 
-    ${var.startup_post_commands}
+    bash -c '${var.startup_post_commands}'
 
   EOT
 
