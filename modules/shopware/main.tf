@@ -131,6 +131,7 @@ module "code_server_mysql" {
 module "code_server_phpmyadmin" {
   source = "git::https://github.com/anticipaterdotcom/coder-terraform-modules.git//modules/phpmyadmin"
   network = docker_network.network.name
+  is_local = var.is_local
 }
 
 resource "docker_image" "shopware" {
