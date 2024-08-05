@@ -119,7 +119,7 @@ resource "docker_container" "workspace" {
     name = docker_network.network.name
   }
   # Use the docker gateway if the access URL is 127.0.0.1
-  entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sh", "-c", replace(coder_agent.shopware.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  entrypoint = var.is_local ? ["/bin/bash", "-c", "tail -f /dev/null"] : ["sudo", "su", "-l", "dockware", "-s", "sh", "-c", replace(coder_agent.shopware.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
   env        = ["CODER_AGENT_TOKEN=${coder_agent.shopware.token}"]
   host {
     host = "host.docker.internal"
