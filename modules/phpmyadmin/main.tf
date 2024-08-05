@@ -14,6 +14,24 @@ variable "network" {
   type        = string
 }
 
+variable "pma_host" {
+  description = "The PMA host"
+  type        = string
+  default     = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-phpmyadmin"
+}
+
+variable "pma_user" {
+  description = "The PMA user"
+  type        = string
+  default     = "db"
+}
+
+variable "pma_pass" {
+  description = "The PMA pass"
+  type        = string
+  default     = "db"
+}
+
 locals {
   username = data.coder_workspace_owner.me.name
 }
