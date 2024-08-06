@@ -83,10 +83,6 @@ resource "coder_agent" "shopware" {
 
     ${var.startup_pre_commands}
 
-    # Customize
-    python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /tmp/.env
-    exit;
-
     # Prepare user home with default files on first start.
     if [ ! -f ~/.init_done ]; then
       cp -rT /etc/skel ~
@@ -97,6 +93,10 @@ resource "coder_agent" "shopware" {
     # install and start code-server
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
+
+    # Customize
+    python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /tmp/.env
+    exit;
 
     ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
     ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
