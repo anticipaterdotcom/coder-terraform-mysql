@@ -99,7 +99,7 @@ resource "coder_agent" "shopware" {
 
 
     echo ${var.env} > /tmp/.env.echo
-    python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /tmp/.env
+    python -c "import json; print(json.dumps(dict([item.split('=', 1) for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /tmp/.env
     exit;
 
     ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
