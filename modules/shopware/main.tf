@@ -97,11 +97,6 @@ resource "coder_agent" "shopware" {
     DEBIAN_FRONTEND=noninteractive apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3 python3
 
-
-    echo ${var.env} > /tmp/.env.echo
-    python -c "import json; print(json.dumps(dict([item.split('=', 1) for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /tmp/.env
-    exit;
-
     ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
     ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
@@ -137,6 +132,7 @@ resource "coder_agent" "shopware" {
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
     echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" >> /var/www/html/.env
     echo "LOCK_DSN=flock" >> /var/www/html/.env
+    python -c "import json; print(json.dumps(dict([item.split('=', 1) for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /tmp/.env
 
     # Media files
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz --warning=no-unknown-keyword
