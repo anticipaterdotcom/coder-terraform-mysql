@@ -133,6 +133,7 @@ resource "coder_agent" "shopware" {
     # Media files
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz --warning=no-unknown-keyword
 
+    cd /var/www/html
     bin/console system:generate-jwt-secret || true
     bin/console user:change-password admin --password shopware || true
     bin/console sales-channel:update:domain 80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev
