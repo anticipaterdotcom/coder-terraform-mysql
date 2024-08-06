@@ -54,6 +54,12 @@ variable "startup_post_commands" {
   EOT
 }
 
+variable "shopware" {
+  description = "Shopware version"
+  type        = string
+  default     = "6.6.4.1"
+}
+
 locals {
   username = "data.coder_workspace_owner.me.name"
   pma_host = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}"
@@ -120,6 +126,11 @@ resource "coder_agent" "shopware" {
     echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" >> /var/www/html/.env
     echo "LOCK_DSN=flock" >> /var/www/html/.env
 
+    sed -i '' 's/idn_to_utf8($request->getHttpHost())/($request->getHttpHost())/g' vendor/shopware/storefront/Framework/Routing/RequestTransformer.php
+
+    # Media files
+    cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz
+
     bin/console system:generate-jwt-secret || true
     bin/console user:change-password admin --password shopware || true
     bin/console sales-channel:update:domain 80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev
@@ -163,7 +174,7 @@ resource "docker_network" "network" {
 }
 
 resource "docker_image" "shopware" {
-  name = "dockware/dev:6.6.4.1"
+  name = "dockware/dev:${var.shopware}"
 }
 
 resource "docker_container" "workspace" {
