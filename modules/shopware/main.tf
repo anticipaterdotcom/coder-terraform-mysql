@@ -109,6 +109,7 @@ resource "coder_agent" "shopware" {
 
     cd /var/www/html
     composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts
+    sed -i 's/idn_to_utf8($request->getHttpHost())/($request->getHttpHost())/g' /var/www/html/vendor/shopware/storefront/Framework/Routing/RequestTransformer.php
 
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
 
@@ -125,8 +126,6 @@ resource "coder_agent" "shopware" {
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
     echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" >> /var/www/html/.env
     echo "LOCK_DSN=flock" >> /var/www/html/.env
-
-    sed -i '' 's/idn_to_utf8($request->getHttpHost())/($request->getHttpHost())/g' vendor/shopware/storefront/Framework/Routing/RequestTransformer.php
 
     # Media files
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz
