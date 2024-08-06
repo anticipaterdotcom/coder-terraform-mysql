@@ -97,6 +97,9 @@ resource "coder_agent" "shopware" {
     DEBIAN_FRONTEND=noninteractive apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3 python3
 
+
+    echo ${var.env} > /tmp/.env.echo
+
     # Customize
     python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /tmp/.env
     exit;
