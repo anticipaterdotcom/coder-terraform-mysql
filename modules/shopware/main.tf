@@ -94,6 +94,9 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
+    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
     cd /var/www/
     cp /var/www/html/.env /var/www/.env
     rm -rf /var/www/html
