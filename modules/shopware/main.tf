@@ -83,6 +83,10 @@ resource "coder_agent" "shopware" {
 
     ${var.startup_pre_commands}
 
+    # Customize
+    python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /tmp/.env
+    exit;
+
     # Prepare user home with default files on first start.
     if [ ! -f ~/.init_done ]; then
       cp -rT /etc/skel ~
