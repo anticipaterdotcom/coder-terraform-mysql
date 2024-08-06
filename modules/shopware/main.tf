@@ -94,6 +94,9 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    DEBIAN_FRONTEND=noninteractive apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y python
+
     # Customize
     python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /tmp/.env
     exit;
@@ -139,6 +142,7 @@ resource "coder_agent" "shopware" {
 
     cd /var/www/html
     bin/console system:generate-jwt-secret || true
+    bin/console user:create --admin --email=john@doe.com --firstName="John" --lastName="Doe" --password=shopware --no-interaction admin || true
     bin/console user:change-password admin --password shopware || true
     bin/console sales-channel:update:domain 80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev
     ./bin/build-administration.sh
