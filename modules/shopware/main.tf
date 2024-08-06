@@ -128,7 +128,7 @@ resource "coder_agent" "shopware" {
     echo "LOCK_DSN=flock" >> /var/www/html/.env
 
     # Media files
-    cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz upload.tgz --warning=no-unknown-keyword
+    cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz --warning=no-unknown-keyword
 
     bin/console system:generate-jwt-secret || true
     bin/console user:change-password admin --password shopware || true
