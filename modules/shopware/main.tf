@@ -95,7 +95,7 @@ resource "coder_agent" "shopware" {
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
     DEBIAN_FRONTEND=noninteractive apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y python
+    DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3 python3
 
     # Customize
     python -c "import json; print(json.dumps(dict([item.split('=') for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /tmp/.env
