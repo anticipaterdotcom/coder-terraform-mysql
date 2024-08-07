@@ -67,6 +67,7 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "wordpress" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
+  order          = 1
   startup_script = <<-EOT
     set -e
 
