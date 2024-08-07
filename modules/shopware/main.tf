@@ -142,8 +142,8 @@ resource "coder_agent" "shopware" {
     bin/console user:create --admin --email=john@doe.com --firstName="John" --lastName="Doe" --password=shopware --no-interaction admin || true
     bin/console user:change-password admin --password shopware || true
     bin/console sales-channel:update:domain 80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev
-    ./bin/build-administration.sh
-    ./bin/build-storefront.sh
+    ./bin/build-administration.sh || true
+    ./bin/build-storefront.sh || true
 
     ${var.startup_post_commands}
 
@@ -188,6 +188,7 @@ resource "docker_image" "shopware" {
 resource "docker_container" "workspace" {
   count = data.coder_workspace.me.start_count
   image = docker_image.shopware.name
+  order = 1
   user = "root"
   # Uses lower() to avoid Docker restriction on container names.
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}"
