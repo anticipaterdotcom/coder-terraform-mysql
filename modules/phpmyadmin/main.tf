@@ -43,6 +43,7 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "phpmyadmin" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
+  order          = 9
   startup_script = <<-EOT
     set -e
 
@@ -98,7 +99,6 @@ variable "is_local" {
 resource "docker_container" "phpmyadmin" {
   count = data.coder_workspace.me.start_count
   image = docker_image.phpmyadmin.image_id
-  order = 9
   # Uses lower() to avoid Docker restriction on container names.
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-phpmyadmin"
   # Hostname makes the shell more user friendly: coder@my-workspace:~$

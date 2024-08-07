@@ -78,6 +78,7 @@ data "coder_workspace_owner" "me" {}
 resource "coder_agent" "shopware" {
   arch           = data.coder_provisioner.me.arch
   os             = "linux"
+  order          = 1
   startup_script = <<-EOT
     set -e
 
@@ -188,7 +189,6 @@ resource "docker_image" "shopware" {
 resource "docker_container" "workspace" {
   count = data.coder_workspace.me.start_count
   image = docker_image.shopware.name
-  order = 1
   user = "root"
   # Uses lower() to avoid Docker restriction on container names.
   name = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}"
