@@ -140,6 +140,7 @@ resource "coder_agent" "shopware" {
     cd /var/www/html
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
     echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" >> /var/www/html/.env
+    echo 'SHOPWARE_CDN_STRATEGY_DEFAULT="id"' >> /var/www/html/.env
     echo "LOCK_DSN=flock" >> /var/www/html/.env
     python3 -c "import json; print(json.dumps(dict([item.split('=', 1) for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /var/www/html/.env
 
