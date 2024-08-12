@@ -155,6 +155,7 @@ resource "coder_agent" "shopware" {
     ./bin/build-administration.sh || true
     ./bin/build-storefront.sh || true
 
+    chown www-data:www-data -Rf /var/www/html
     # Reverse proxy hack
     sed -i '2i\\$_SERVER["HTTPS"]="on";' /var/www/html/public/index.php
 
