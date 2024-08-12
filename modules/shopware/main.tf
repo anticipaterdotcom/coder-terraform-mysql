@@ -156,7 +156,7 @@ resource "coder_agent" "shopware" {
     ./bin/build-storefront.sh || true
 
     # Reverse proxy hack
-    sed -i '3i\\$_SERVER['HTTPS']='on';' /var/www/html/public/index.php
+    sed -i '3i\\$_SERVER[HTTPS]='on';' /var/www/html/public/index.php
 
     ${var.startup_post_commands}
 
