@@ -96,18 +96,14 @@ resource "coder_agent" "shopware" {
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
     DEBIAN_FRONTEND=noninteractive apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y python3
 
     if [[ "${var.shopware}" == 6.5* ]]; then
-      DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3 python3
+      DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3
     fi
 
     if [[ "${var.shopware}" == 6.6* ]]; then
-      DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3 python3
-    fi
-
-    if [[ "${var.shopware}" == 6.4* ]]; then
-      DEBIAN_FRONTEND=noninteractive apt-get install -y python3
-      alias python=python3
+      DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3
     fi
 
     ssh-keyscan -t rsa bitbucket.org >> ~/.ssh/known_hosts
@@ -145,18 +141,22 @@ resource "coder_agent" "shopware" {
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
     echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" >> /var/www/html/.env
     echo "LOCK_DSN=flock" >> /var/www/html/.env
-    python -c "import json; print(json.dumps(dict([item.split('=', 1) for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /var/www/html/.env
+    python3 -c "import json; print(json.dumps(dict([item.split('=', 1) for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /var/www/html/.env
 
     # Media files
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz --warning=no-unknown-keyword
 
     cd /var/www/html
+    rm -rf config/jwt/*
     bin/console system:generate-jwt-secret || true
     bin/console user:create --admin --email=john@doe.com --firstName="John" --lastName="Doe" --password=shopware --no-interaction admin || true
     bin/console user:change-password admin --password shopware || true
     bin/console sales-channel:update:domain 80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev
     ./bin/build-administration.sh || true
     ./bin/build-storefront.sh || true
+
+    # Reverse proxy hack
+    sed -i '3i\\$_SERVER['HTTPS']='on';' /var/www/html/public/index.php
 
     ${var.startup_post_commands}
 
