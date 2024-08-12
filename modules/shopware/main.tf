@@ -95,18 +95,17 @@ resource "coder_agent" "shopware" {
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.19.1
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
 
+    DEBIAN_FRONTEND=noninteractive apt-get update
+
     if [[ "${var.shopware}" == 6.5* ]]; then
-      DEBIAN_FRONTEND=noninteractive apt-get update
       DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3 python3
     fi
 
     if [[ "${var.shopware}" == 6.6* ]]; then
-      DEBIAN_FRONTEND=noninteractive apt-get update
       DEBIAN_FRONTEND=noninteractive apt-get install -y python-is-python3 python3
     fi
 
     if [[ "${var.shopware}" == 6.4* ]]; then
-      DEBIAN_FRONTEND=noninteractive apt-get update
       DEBIAN_FRONTEND=noninteractive apt-get install -y python3
       alias python=python3
     fi
