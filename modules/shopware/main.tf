@@ -137,6 +137,9 @@ resource "coder_agent" "shopware" {
     wget -nv -O dump.sql.gz ${var.dump}
     zcat dump.sql.gz | mysql -u 'root' -proot shopware
 
+    # force SSL because reverse proxy is running also http behind https
+    mysql -u root -proot root -e "USE shopware; UPDATE sales_channel_domain SET url = REPLACE(url, 'http://', 'https://') WHERE url LIKE 'http://%';"
+
     cd /var/www/html
     sed -i 's/http:\/\/localhost/https:\/\/80--shopware--${lower(data.coder_workspace.me.name)}--${lower(data.coder_workspace_owner.me.name)}.cloud.dinited.dev\//g' .env
     echo "SHOPWARE_SKIP_WEBINSTALLER=TRUE" >> /var/www/html/.env
