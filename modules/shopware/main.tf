@@ -126,6 +126,7 @@ resource "coder_agent" "shopware" {
     composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts
     sed -i 's/idn_to_utf8($request->getHttpHost())/($request->getHttpHost())/g' /var/www/html/vendor/shopware/storefront/Framework/Routing/RequestTransformer.php
 
+    sed -i '/sudo lsof -t -i tcp:80 | sudo xargs kill >\/dev\/null 2>&1 || true;/d' /entrypoint.sh
     /entrypoint.sh >/tmp/dockware.log 2>&1 &
 
     # Wait for MySQL  to be ready
