@@ -201,7 +201,7 @@ resource "docker_network" "network" {
 }
 
 resource "docker_image" "shopware" {
-  name = "dockware/dev:${var.shopware}"
+  name = "dockware/play:${var.shopware}"
 }
 
 resource "docker_container" "workspace" {
