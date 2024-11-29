@@ -155,6 +155,7 @@ resource "coder_agent" "shopware" {
     python3 -c "import json; print(json.dumps(dict([item.split('=', 1) for item in '${var.env}'.strip('[]').split(',')])))" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /var/www/html/.env
 
     # Media files
+    rm -rf /var/www/html/public/media
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz --warning=no-unknown-keyword
 
     cd /var/www/html
