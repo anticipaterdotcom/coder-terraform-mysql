@@ -122,6 +122,7 @@ resource "coder_agent" "shopware" {
     mkdir -p temp_dir
     git clone --single-branch --branch ${var.branch} ${var.repo} temp_dir
     mv temp_dir/* temp_dir/.* /var/www/html
+    shopt -s dotglob && mv temp_dir/* /var/www/html
     rm -rf temp_dir --no-preserve-root
     chown www-data:www-data -Rf /var/www/html
     cp /var/www/.env /var/www/html/.env
