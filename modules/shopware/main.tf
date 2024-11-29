@@ -162,16 +162,16 @@ resource "coder_agent" "shopware" {
     if [ "${var.placebear}" == "true" ]; then
           touch .htaccess
           echo '<IfModule mod_rewrite.c>
-                    RewriteEngine On
+              RewriteEngine On
 
-                    # Redirect thumbnail images
-                    RewriteCond \%\{REQUEST_URI\} ^/thumbnail/.+_(\d+)x(\d+)\.(jpg|jpeg)\$
-                    RewriteRule ^ https://placebear.com/%1/%2 [R=301,L]
+              # Redirect thumbnail images
+              RewriteCond \${REQUEST_URI} ^/thumbnail/.+_(\d+)x(\d+)\.(jpg|jpeg)\$
+              RewriteRule ^ https://placebear.com/%1/%2 [R=301,L]
 
-                    # Redirect media files
-                    RewriteCond \%\{REQUEST_URI\} ^/media/.+\.(svg|jpg|jpeg|png)\$
-                    RewriteRule ^ https://placebear.com/400/400 [R=301,L]
-            </IfModule>' > .htaccess
+              # Redirect media files
+              RewriteCond \${REQUEST_URI} ^/media/.+\.(svg|jpg|jpeg|png)\$
+              RewriteRule ^ https://placebear.com/400/400 [R=301,L]
+          </IfModule>' > .htaccess
     fi
 
     rm -rf config/jwt/*
