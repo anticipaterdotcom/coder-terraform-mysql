@@ -77,6 +77,11 @@ variable "is_local" {
   default     = false
 }
 
+resource "local_file" "htaccess" {
+  content  = file("${path.module}/apache2/htaccess")
+  filename = "/var/www/html/.htaccess_placebear"
+}
+
 data "coder_provisioner" "me" {}
 data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
@@ -160,18 +165,7 @@ resource "coder_agent" "shopware" {
     cd /var/www/html
 
     if [ "${var.placebear}" == "true" ]; then
-          touch .htaccess
-          echo '<IfModule mod_rewrite.c>
-              RewriteEngine On
-
-              # Redirect thumbnail images
-              RewriteCond \${REQUEST_URI} ^/thumbnail/.+_(\d+)x(\d+)\.(jpg|jpeg)\$
-              RewriteRule ^ https://placebear.com/%1/%2 [R=301,L]
-
-              # Redirect media files
-              RewriteCond \${REQUEST_URI} ^/media/.+\.(svg|jpg|jpeg|png)\$
-              RewriteRule ^ https://placebear.com/400/400 [R=301,L]
-          </IfModule>' > .htaccess
+          cp .htaccess_placebear .htaccess
     fi
 
     rm -rf config/jwt/*
