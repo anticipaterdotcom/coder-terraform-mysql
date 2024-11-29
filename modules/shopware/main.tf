@@ -60,6 +60,12 @@ variable "shopware" {
   default     = "6.6.4.1"
 }
 
+variable "placebear" {
+  description = "Placebear Placeholder"
+  type        = string
+  default     = true
+}
+
 locals {
   username = "data.coder_workspace_owner.me.name"
   pma_host = "coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}"
@@ -152,6 +158,11 @@ resource "coder_agent" "shopware" {
     cd /tmp && wget -nv -O upload.tgz ${var.upload} && mkdir -p /var/www/html/public/media && cd /var/www/html/public/media && tar xfz /tmp/upload.tgz --warning=no-unknown-keyword
 
     cd /var/www/html
+
+    if [ "${var.placebear}" == "true" ]; then
+      sed -i '51i\        include placebear.conf' /etc/nginx/nginx.conf
+    fi
+
     rm -rf config/jwt/*
     bin/console system:generate-jwt-secret || true
     bin/console user:create --admin --email=john@doe.com --firstName="John" --lastName="Doe" --password=shopware --no-interaction admin || true
