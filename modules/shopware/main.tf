@@ -161,6 +161,7 @@ resource "coder_agent" "shopware" {
 
     if [ "${var.placebear}" == "true" ]; then
       sed -i '51i\        include placebear.conf' /etc/nginx/nginx.conf
+      cp ../../nginx/placebear.conf config/etc/nginx/placebear.conf
     fi
 
     rm -rf config/jwt/*
