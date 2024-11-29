@@ -160,7 +160,7 @@ resource "coder_agent" "shopware" {
     cd /var/www/html
 
     if [ "${var.placebear}" == "true" ]; then
-          cp .htaccess_placebear .htaccess
+          cp .htaccess_placebear public/.htaccess
     fi
 
     rm -rf config/jwt/*
