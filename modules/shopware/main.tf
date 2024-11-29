@@ -79,7 +79,7 @@ variable "is_local" {
 
 resource "local_file" "htaccess" {
   content  = file("${path.module}/apache2/htaccess")
-  filename = "/var/www/.htaccess_placebear"
+  filename = "/opt/.htaccess_placebear"
 }
 
 data "coder_provisioner" "me" {}
@@ -165,7 +165,7 @@ resource "coder_agent" "shopware" {
     cd /var/www/html
 
     if [ "${var.placebear}" == "true" ]; then
-          cp /var/www/.htaccess_placebear .htaccess
+          cp /opt/.htaccess_placebear .htaccess
     fi
 
     rm -rf config/jwt/*
