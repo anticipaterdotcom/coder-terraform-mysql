@@ -167,7 +167,7 @@ resource "coder_agent" "wordpress" {
         sleep 10
     done
 
-    wget -O /tmp/upload.tgz ${var.dump}
+    wget -q -O /tmp/upload.tgz ${var.dump}
     zcat dump.sql.gz | mysql -h coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql -u 'db' -pdb db
 
     chown -Rf www-data:www-data /var/www/html
@@ -175,7 +175,7 @@ resource "coder_agent" "wordpress" {
     wp user create admin admin@anticipater.com --role=administrator --user_pass=admin --allow-root || true
 
     # Media files
-    wget -O /tmp/upload.tgz ${var.upload}
+    wget -q -O /tmp/upload.tgz ${var.upload}
     mkdir -p /var/www/html/web/app/uploads && cd /var/www/html/web/app/uploads && tar xfz /tmp/upload.tgz
 
     chown www-data:www-data -R /var/www/html
