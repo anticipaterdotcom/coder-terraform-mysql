@@ -167,8 +167,8 @@ resource "coder_agent" "wordpress" {
         sleep 10
     done
 
-    wget -q -O /tmp/upload.tgz ${var.dump}
-    zcat dump.sql.gz | mysql -h coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql -u 'db' -pdb db
+    wget -q -O /tmp/dump.sql.gz ${var.dump}
+    zcat /tmp/dump.sql.gz | mysql -h coder-${lower(data.coder_workspace_owner.me.name)}-${lower(data.coder_workspace.me.name)}-mysql -u 'db' -pdb db
 
     chown -Rf www-data:www-data /var/www/html
     composer install
